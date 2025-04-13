@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>₿itcoin: The Silent Reset</title>
+  <!-- Google Fonts: Roboto Mono for code-like precision, Montserrat for headlines -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700;900&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== CSS Variables & Global Reset ===== */
+    :root {
+      --bg-dark: #000;
+      --bg-mid: #18181b;
+      --bg-light: #1f2937;
+      --accent-yellow: #FACC15;
+      --accent-orange: #F97316;
+      --accent-red: #EF4444;
+      --accent-green: #10B981;
+      --accent-cyan: #06B6D4;
+      --accent-pink: #EC4899;
+      --accent-violet: #8B5CF6;
+      --accent-rose: #F43F5E;
+      --text-light: #fff;
+      --nav-bg: rgba(0, 0, 0, 0.6);
+      --transition-speed: 0.6s;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Roboto Mono', monospace;
+      background: linear-gradient(135deg, var(--bg-dark), var(--bg-mid), var(--bg-light));
+      color: var(--text-light);
+      overflow-x: hidden;
+      position: relative;
+      line-height: 1.6;
+    }
+    /* ===== Dynamic Gradient Animation for Background ===== */
+    @keyframes bgGradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #000, #333, #000);
+      background-size: 400% 400%;
+      z-index: -3;
+      animation: bgGradient 20s ease infinite;
+      opacity: 0.2;
+    }
+    /* ===== Advanced Particle Canvas ===== */
+    #particle-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -2;
+    }
+    /* ===== Scroll Progress Bar ===== */
+    #progressBar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 5px;
+      background: var(--accent-yellow);
+      width: 0%;
+      z-index: 200;
+      transition: width 0.1s ease-out;
+    }
+    /* ===== Sticky Navigation ===== */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 1rem 2rem;
+      background: var(--nav-bg);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 150;
+      transition: background var(--transition-speed);
+      backdrop-filter: blur(5px);
+    }
+    nav.sticky { background: rgba(0,0,0,0.9); }
+    nav .logo a {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.8rem;
+      color: var(--accent-yellow);
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+    }
+    nav .logo a::after {
+      content: "";
+      position: absolute;
+      left: 0; bottom: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--accent-yellow);
+      transform: translateX(-100%);
+      transition: transform 0.4s;
+    }
+    nav .logo a:hover::after { transform: translateX(0); }
+    nav ul {
+      display: flex;
+      list-style: none;
+    }
+    nav ul li { margin-left: 1.5rem; }
+    nav ul li a {
+      color: #ddd;
+      text-decoration: none;
+      font-size: 1.1rem;
+      position: relative;
+      overflow: hidden;
+      transition: color 0.3s ease;
+    }
+    nav ul li a:hover { color: var(--text-light); }
+    nav ul li a::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.4s, height 0.4s;
+      z-index: -1;
+    }
+    nav ul li a:hover::after {
+      width: 120%;
+      height: 300%;
+    }
+    /* ===== Mobile Hamburger Menu ===== */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+    .hamburger span {
+      width: 25px;
+      height: 3px;
+      background: var(--text-light);
+      margin: 4px 0;
+      transition: all 0.3s;
+    }
+    @media (max-width: 768px) {
+      nav ul { display: none; flex-direction: column; background: rgba(0,0,0,0.95); position: absolute; top: 100%; right: 0; width: 220px; }
+      nav ul.active { display: flex; }
+      .hamburger { display: flex; }
+    }
+    /* ===== Main Container ===== */
+    .container {
+      padding: 6rem 2rem 2rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+    /* ===== Section Reveal Animation ===== */
+    .section {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 1s ease;
+    }
+    .section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    /* ===== Header Section with Parallax ===== */
+    header {
+      text-align: center;
+      padding: 10rem 1rem 5rem;
+      border-bottom: 1px solid #333;
+      position: relative;
+      overflow: hidden;
+    }
+    header h1 {
+      font-size: 11rem;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.35em;
+      background: linear-gradient(90deg, var(--accent-yellow), var(--accent-orange), var(--accent-red));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: pulse 2s infinite;
+      filter: drop-shadow(0 0 60px rgba(250,204,21,0.9));
+      margin-bottom: 2rem;
+    }
+    header p {
+      font-size: 2.5rem;
+      max-width: 80%;
+      margin: 0 auto;
+      line-height: 1.4;
+      letter-spacing: 0.05em;
+      font-style: italic;
+      filter: drop-shadow(0 0 40px rgba(255,255,255,0.1));
+    }
+    /* ===== Section Titles & Content ===== */
+    section h2 {
+      text-align: center;
+      font-size: 4rem;
+      font-weight: bold;
+      margin-bottom: 3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    section p, section li, section ol, section ul {
+      font-size: 1.8rem;
+      max-width: 80%;
+      margin: auto;
+      line-height: 1.5;
+      margin-bottom: 2rem;
+    }
+    ul { list-style-type: disc; padding-left: 2rem; }
+    ol { list-style-type: decimal; padding-left: 2rem; }
+    /* ===== Cards & Grid Layout ===== */
+    .grid {
+      display: grid;
+      gap: 3rem;
+      margin-bottom: 4rem;
+    }
+    .grid-two { grid-template-columns: 1fr; }
+    @media(min-width: 768px) {
+      .grid-two { grid-template-columns: 1fr 1fr; }
+    }
+    .card {
+      background: #111;
+      padding: 3rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 20px rgba(0,0,0,0.8);
+      border: 2px solid;
+      transition: transform 0.4s, box-shadow 0.4s;
+    }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 0 30px rgba(0,0,0,1); }
+    .card-yellow { border-color: var(--accent-yellow); }
+    .card-red { border-color: var(--accent-red); }
+    /* ===== Section Backgrounds with SVG Divider ===== */
+    .section-bg {
+      background: var(--bg-mid);
+      border-top: 1px solid #333;
+      border-bottom: 1px solid #333;
+      padding: 6rem 1rem;
+      position: relative;
+    }
+    .section-bg::before {
+      content: "";
+      position: absolute;
+      top: -1px;
+      left: 0;
+      width: 100%;
+      height: 50px;
+      background: url('data:image/svg+xml;utf8,<svg width="100%" height="50" xmlns="http://www.w3.org/2000/svg"><path d="M0 50 C 50 0  150 0  200 50 L200 00 L0 0 Z" fill="%23222"/></svg>') no-repeat bottom;
+      background-size: cover;
+    }
+    /* ===== Footer ===== */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid #333;
+      font-size: 1.2rem;
+      margin-top: 4rem;
+      color: #aaa;
+    }
+    /* ===== Animations ===== */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+    .animate-fade-in { animation: fadeIn 2s ease-in-out; }
+    /* ===== Back-to-Top Button ===== */
+    #backToTop {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: rgba(0,0,0,0.7);
+      color: var(--text-light);
+      border: none;
+      border-radius: 50%;
+      width: 3.5rem;
+      height: 3.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 150;
+      font-size: 1.5rem;
+    }
+    #backToTop.visible { opacity: 1; }
+  </style>
+</head>
+<body>
+  <!-- Scroll Progress Bar -->
+  <div id="progressBar"></div>
+  
+  <!-- Advanced Particle Background Canvas -->
+  <canvas id="particle-canvas"></canvas>
+  
+  <!-- Navigation -->
+  <nav id="navbar">
+    <div class="logo"><a href="#top"><strong>₿ITCOIN</strong></a></div>
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+    <ul id="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#trustless">Philosophy</a></li>
+      <li><a href="#not-crypto">₿itcoin vs Crypto</a></li>
+      <li><a href="#bitcoin-is">Essence</a></li>
+      <li><a href="#network">Network</a></li>
+      <li><a href="#scam">Debunk</a></li>
+      <li><a href="#truth-layer">Truth Layer</a></li>
+      <li><a href="#FAQ">FAQ</a></li>
+    </ul>
+  </nav>
+  
+  <div class="container" id="top">
+    <!-- Header Section with Parallax Effect -->
+    <header id="home" class="section">
+      <h1>₿ITCOIN: THE SILENT RESET</h1>
+      <p>
+        Not a product. Not a brand. Not a bet.<br>
+        <strong>₿itcoin is the silent re-alignment of natural law with human action</strong> — the incorruptible convergence of time, energy, and mathematical truth into a living protocol of freedom.<br><br>
+        It cannot be inflated, silenced, seized, or deceived.<br>
+        It does not promise. It proves.<br>
+        It does not rule. It reveals.<br>
+        It does not adapt to systems. It outlasts them.<br><br>
+
+        <strong>Forged from entropy. Hardened by consensus. Rooted in reality.</strong><br>
+        It flows beneath nations, ideologies, markets, and dogmas — uninvited, unstoppable, and ungovernable.<br>
+        It is the final defense and the first foundation.<br><br>
+
+        <strong>A clock that cannot lie. A vault without keys. A signal immune to corruption.</strong><br>
+        No CEO. No central bank. No backdoor.<br><br>
+        
+        It does not need you to believe.<br>
+        It only needs you to look — and keep looking — until the illusion breaks.<br><br>
+
+        <strong>This is not a movement. This is gravity.</strong>
+      </p>
+    </header>
+    
+    <!-- Philosophy Section -->
+    <section id="trustless" class="section">
+        <h2 style="color: var(--accent-green);">Trustless. Peerless. Permissionless.</h2>
+        <p>
+        This is not an app.<br>
+        Not a startup.<br>
+        Not a movement.<br><br>
+    
+        <strong>This is monetary gravity — anchoring civilization in incorruptible truth.</strong><br>
+        It does not pull with persuasion. It pulls with inevitability.<br>
+        <strong>No trust. No permission. No compromise.</strong><br>
+        Only verification, alignment, and unrelenting precision.<br><br>
+    
+        <strong>₿itcoin is the first and only living monetary organism</strong> — a self-regulating engine of honesty that operates without ego, agenda, or permission.<br>
+        It does not ask for access. It provides exit.<br>
+        It does not request belief. It encodes reality.<br><br>
+    
+        <strong>No CEO. No boardroom. No maintenance window. No kill switch.</strong><br>
+        It runs when the world doesn’t.<br>
+        It confirms while courts stall.<br>
+        It persists when systems collapse.<br>
+        <strong>While everything lies, it tells time.</strong><br><br>
+    
+        A silent daemon, synchronizing global truth every ten minutes — with no holidays, no bribes, no excuses.<br>
+        It cannot freeze, censor, or discriminate.<br>
+        It simply moves. Always forward. Always open.<br><br>
+    
+        <strong>₿itcoin does not fight the system. It dissolves the need for one.</strong><br>
+        It is not an escape from corruption — it is the end of its relevance.<br>
+        Where power once centralized, it decentralizes.<br>
+        Where institutions failed, it verifies.<br>
+        Where trust broke, it replaced it with math.<br><br>
+    
+        <strong>This is not a revolution. It is a replacement.</strong><br>
+        Not of governments, but of gravity — the underlying logic of value.
+        </p>
+    </section>
+  
+    
+    <!-- Bitcoin vs Crypto Section -->
+    <section id="not-crypto" class="section section-bg">
+        <h2 style="color: var(--accent-pink);">₿itcoin Is Not Crypto</h2>
+        <div class="grid grid-two">
+        <div class="card card-yellow">
+            <p>
+            <span style="color: var(--accent-yellow); font-size: 2rem; font-weight: bold;">₿itcoin</span> is not a trend. Not a token. Not a team.
+            <br><br>
+            It is not a product. Not a brand. Not a project. It is not a vision. It is not a company. It is not a promise.
+            <br><br>
+            <strong>₿itcoin is a metaphysical constant</strong> — an incorruptible layer of economic truth, encoded in time, secured by energy, and beyond all influence.
+            <br><br>
+            It has no founder to follow, no insider allocation to exploit, no gatekeeper to bribe, no off-switch to fear.
+            <br><br>
+            It does not change to please you. It does not break to enrich someone else.
+            It is not managed. It is not sold. It is not asking to be liked.
+            <br><br>
+            <strong>It simply functions</strong> — perfectly, indifferently, incorruptibly — every ten minutes.
+            Like the sunrise. Like gravity. Like entropy.
+            <br><br>
+            <strong>₿itcoin is thermodynamic consensus.</strong>
+            It is the final firewall of civilization: the line that corruption cannot cross.
+            </p>
+        </div>
+        <div class="card card-red">
+            <p>
+            <span style="color: var(--accent-red); font-size: 2rem; font-weight: bold;">Crypto</span> is the theater of decentralization.
+            <br><br>
+            A rotating stage of coin casinos, pump cycles, insider exits, and buzzwords in drag.
+            <br><br>
+            <strong>It is marketing in protocol’s clothing</strong> — mutable consensus, fake scarcity, gamified speculation. 
+            Startups wearing revolution as costume. VCs selling volatility as liberation. Influencers spinning hype as history.
+            <br><br>
+            Crypto is noise impersonating signal. <strong>₿itcoin is signal immune to noise.</strong>
+            <br><br>
+            One begs for attention. The other refuses it.
+            One burns for a cycle. The other <strong>anchors eternity</strong>.
+            <br><br>
+            ₿itcoin does not ask you to join. It simply makes it impossible to ignore.
+            <br><br>
+            Where crypto imitates liberation, <strong>₿itcoin embodies it</strong>.
+            Where crypto sells promises, <strong>₿itcoin keeps none — and breaks nothing</strong>.
+            Where crypto depends on your belief, <strong>₿itcoin works whether you believe or not</strong>.
+            </p>
+        </div>
+        </div>
+    </section>
+  
+    
+    <!-- Essence Section -->
+    <section id="bitcoin-is" class="section">
+        <h2 style="color: var(--accent-cyan);">₿itcoin <em>IS</em>:</h2>
+        <ul>
+        <li><strong>A fixed cosmic boundary on monetary entropy.</strong> 21 million is not a cap — it’s a covenant. An unforgeable truth, etched in math and fire, reasserting scarcity in a world hallucinating infinite abundance. A limit not imposed, but revealed. A mirror to natural law, unbending in a sea of synthetic permission.</li>
+    
+        <li><strong>Decentralized spacetime consensus — enforced by energy.</strong> ₿itcoin replaces trust with thermodynamic proof. No third party. No fallback. Only math, time, and energy — synchronizing the planet every ten minutes. Final settlement without borders. No permissions. No reversals. No rulers. No doubt. Consensus without control. Truth without intermediaries.</li>
+    
+        <li><strong>An incorruptible exoskeleton for economic sovereignty.</strong> A vault with no keys to lose. A fortress no regime can breach. ₿itcoin empowers the individual to defend value across time, space, and tyranny — without permission, compromise, or appeal. It bends to no authority. It makes sovereignty executable.</li>
+    
+        <li><strong>A living chain of immortalized legitimacy.</strong> Every block: a timestamped oath to reality. A heartbeat of incorruptible memory — immune to bribes, edits, erasures, and decrees. Ledger as law. History that cannot be rewritten. Memory as resistance. Time as witness.</li>
+    
+        <li><strong>The monetary spine of a post-nation civilization.</strong> Not globalist. Not nationalist. Sovereign. Voluntary. Emergent. ₿itcoin is the invisible substrate for a world no longer built on domination — but on unbreakable consensus and incorruptible truth. It is not the system. It is the end of systems. A foundation for coordination beyond coercion. A protocol for peace without permission.</li>
+    
+        <li><strong>₿itcoin is not a reaction. It is the re-alignment.</strong> Not an alternative. The original truth rediscovered. It is the spine, the shield, the signal, and the law — not imposed by men, but uncovered in the fabric of reality itself.</li>
+        </ul>
+    </section>
+  
+    
+<!-- Network Section -->
+    <section id="network" class="section section-bg">
+        <h2 style="color: var(--accent-violet);">Enter the Network</h2>
+        <ol>
+        <li><strong>Download a self-custodial wallet</strong> — this is your gateway, not to finance, but to <em>freedom</em>. Choose 
+            <a href="https://phoenixwallet.org" style="color: var(--accent-yellow); text-decoration: underline;">Phoenix</a>, 
+            <a href="https://bluewallet.io" style="color: var(--accent-yellow); text-decoration: underline;">₿lueWallet</a>, or 
+            <a href="https://breez.technology" style="color: var(--accent-yellow); text-decoration: underline;">₿reez</a>. 
+            No sign-ups. No banks. No state. Just keys.
+        </li>
+        <li><strong>Receive sats</strong> — even $0.01 is enough. Ask a trusted node. Or 
+            <a href="https://fountain.fm" style="color: #60A5FA; text-decoration: underline;">earn sats by listening</a>. 
+            Ownership begins not with wealth, but with reception. You are not joining a platform — you are exiting a system.
+        </li>
+        <li><strong>Send sats</strong> — instantly, across oceans, firewalls, and regimes. No middlemen. No gatekeepers. 
+            No permissions. What you just experienced wasn’t a transaction. 
+            It was <em>unmediated energy transfer</em> — monetary light, obeying only physics.
+        </li>
+        <li><strong>Pause.</strong> Feel it. That tremor in your nervous system? That wasn’t tech. 
+            That was <em>sovereignty entering your body</em>. A rupture in the simulation. 
+            You just broke the fourth wall of finance. Let it sink in.
+        </li>
+        </ol>
+    </section>
+  
+    
+<!-- Debunk/Scam Section -->
+    <section id="scam" class="section">
+        <h2 style="color: var(--accent-rose);">Still Think It’s a Scam?</h2>
+        <div style="background: #111; padding: 2rem; border-left: 4px solid var(--accent-yellow); max-width: 80%; margin: 2rem auto; box-shadow: 0 0 30px rgba(0,0,0,0.7);">
+        <p style="font-size: 1.8rem; font-weight: 600; margin-bottom: 1rem;">
+            If this is a scam, it’s the only one that:
+        </p>
+        <ul style="padding-left: 1.5rem; font-size: 1.2rem;">
+            <li><strong>Has no CEO, no foundation, no equity, no roadmap</strong> — just raw protocol, running flawlessly for over a decade. No downtime. No bailouts. Just uptime — while the world breaks.</li>
+            <li><strong>Was launched without pre-mine, without venture backing, without permission</strong> — a genesis in full public view, under adversarial conditions, with zero advantage.</li>
+            <li><strong>Is secured by the most powerful computing force on Earth</strong> — backed not by trust, but by physics. Thermodynamic finality. Bribe-resistant. Seizure-proof. Globally redundant.</li>
+            <li><strong>Offers no yield, no promise, no product</strong> — only final settlement and a provable exit from the monetary simulation. No ROI pitch. No “stake and earn.” Just truth — settled, timestamped, and irreversible.</li>
+            <li><strong>Spreads without marketing, without influencers, without coercion</strong> — just voluntary adoption. Because it works. Because it can’t be stopped.</li>
+        </ul>
+        </div>
+        <p style="font-size: 1.2rem; text-align: center; max-width: 80%; margin: 2rem auto;">
+        So… still think this is the scam?<br><br>
+    
+        What do you call a system where your savings decay, your work is taxed twice, your value diluted, and your obedience monetized?<br>
+        Where inflation is policy. Debasement is design. And freedom is framed as risk?<br><br>
+    
+        <strong>The real scam is the one you're still inside.</strong><br>
+        The one that tells you safety is compliance. That silence is peace. That money must be controlled.<br><br>
+    
+        <strong>₿itcoin doesn’t offer you hope. It encodes freedom.</strong><br>
+        No promises. No pitch. Just math — and your choice.<br><br>
+    
+        It doesn’t ask you to believe. <strong>It invites you to verify.</strong><br><br>
+    
+        The question isn’t <em>“Is ₿itcoin a scam?”</em><br>
+        <strong>The question is “How long are you willing to pretend the world you’re in isn’t?”</strong>
+        </p>
+    </section>
+  
+    
+<!-- Terminal Truth Layer Section -->
+    <section id="truth-layer" class="section">
+        <h2 style="color: var(--accent-green); font-size: 5rem;">₿itcoin is the Terminal Truth Layer</h2>
+        <p>
+        This is not recruitment.<br>
+        <strong>This is remembrance.</strong><br>
+        Not belief. Not hype. Not tribe.<br>
+        <strong>A return to something the world forgot could exist: incorruptible truth.</strong><br><br>
+    
+        ₿itcoin is not here to be accepted.<br>
+        <strong>It is here to outlast.</strong><br>
+        Empires fall. Narratives fracture. Trust evaporates.<br>
+        <strong>₿itcoin doesn’t move. It anchors deeper.</strong><br><br>
+    
+        In an age of digital illusion, media hallucination, and manufactured consensus,<br>
+        <strong>₿itcoin is the lone apolitical layer of irreversible reality.</strong><br>
+        It does not yield to opinion.<br>
+        It does not adapt to fashion.<br>
+        <strong>It does not blink when nations collapse.</strong><br><br>
+    
+        <strong>It is not a savior.</strong><br>
+        <strong>It is the protocol immune to priesthood.</strong><br>
+        No flag to wave. No leader to follow.<br>
+        <strong>Just open code. Open entry. Open exit.</strong><br>
+        <strong>It does not care who you are — only that you verify.</strong><br><br>
+    
+        <strong>Belief does nothing to it.</strong><br>
+        <strong>Denial does nothing against it.</strong><br>
+        <strong>₿itcoin does not need you.</strong><br>
+        But if you seek foundation beneath fiction,<br>
+        If you seek finality beneath spin,<br>
+        If you seek <em>the real beneath the real</em>,<br>
+        You will find it there — silent, incorruptible, patient.<br><br>
+    
+        You do not adopt ₿itcoin.<br>
+        <strong>You align with it.</strong><br>
+        Or you get left behind.<br>
+        <strong>Not by ideology — by time.</strong>
+        </p>
+        <p style="font-size: 2.5rem; text-align: center; color: var(--accent-green); font-weight: bold; margin-top: 2rem;">
+        When trust dies, protocol survives.<br><strong>That’s ₿itcoin.</strong><br><br>
+        <em>The terminal layer. The end of lies. The beginning of coherence.</em><br>
+        No permission required.
+        </p>
+    </section>
+
+    <!-- FAQ Section --> 
+    <section id="FAQ" class="section">
+        <h2 style="color: var(--accent-yellow); font-size: 4rem;">FAQ: Disarming the FUD</h2>
+        <div style="max-width: 80%; margin: 2rem auto; font-size: 1.3rem; line-height: 1.8;">
+            
+            <details style="margin-bottom: 2rem;">
+                <summary><strong>Isn’t ₿itcoin bad for the environment?</strong></summary>
+                <p>
+                    No. That myth ignores how ₿itcoin actually <em>uses wasted and stranded energy</em> to secure truth. It converts energy that would otherwise be lost — flared gas, remote hydro, surplus renewables — into incorruptible value.<br><br>
+                    ₿itcoin doesn’t waste energy. It <strong>transforms entropy into integrity</strong>. And unlike fiat, it doesn’t fund war or overconsumption — it encodes thermodynamic accountability. Also, go look up how much energy is used up by the current monetary system, and then compare that to ₿itcoin. 
+                </p>
+            </details>
+
+            <details style="margin-bottom: 2rem;">
+                <summary><strong>Isn’t ₿itcoin too volatile to be useful?</strong></summary>
+                <p>
+                    Volatility is not a flaw — it’s a phase of monetization. Every world-changing asset starts volatile.<br><br>
+                    ₿itcoin is undergoing global price discovery <strong>for a money that cannot be diluted or controlled</strong>. Volatility is the sound of fiat dying — and something incorruptible taking its place.<br><br>
+                    <strong>Volatility is the price of freedom.</strong>
+                </p>
+            </details>
+
+            <details style="margin-bottom: 2rem;">
+                <summary><strong>Isn’t ₿itcoin used for crime?</strong></summary>
+                <p>
+                    Everything is used for crime — but ₿itcoin is actually <strong>one of the worst tools for it</strong>.<br><br>
+                    Every transaction is <em>public, timestamped, and permanently auditable</em>. Criminals prefer cash, shell companies, and offshore banks.<br><br>
+                    ₿itcoin doesn’t hide crime. <strong>It exposes it.</strong>
+                </p>
+            </details>
+
+            <details style="margin-bottom: 2rem;">
+                <summary><strong>Can’t governments just ban it?</strong></summary>
+                <p>
+                    They can try. Some have. It never works.<br><br>
+                    ₿itcoin is <strong>code, not company</strong> — a distributed protocol that runs across thousands of nodes worldwide. It's like trying to ban math.<br><br>
+                    Every attempt to suppress it <strong>proves why it’s needed</strong>.
+                </p>
+            </details>
+
+            <details style="margin-bottom: 2rem;">
+                <summary><strong>Isn’t ₿itcoin just a Ponzi scheme?</strong></summary>
+                <p>
+                    No founder. No promises. No central authority. No yield.<br><br>
+                    ₿itcoin offers you nothing except <strong>pure, provable ownership</strong>.<br><br>
+                    The real Ponzi is fiat — where value is siphoned, inflated, and redistributed by force.
+                </p>
+            </details>
+
+            <details style="margin-bottom: 2rem;">
+                <summary><strong>Isn’t ₿itcoin too complicated for regular people?</strong></summary>
+                <p>
+                    You don’t need to understand TCP/IP to use the internet.<br><br>
+                    With tools like <a href="https://phoenixwallet.org" style="color: var(--accent-yellow); text-decoration: underline;">Phoenix</a> and <a href="https://breez.technology" style="color: var(--accent-yellow); text-decoration: underline;">₿reez</a>, it’s now easier than ever.<br><br>
+                    What matters is one rule: <strong>Not your keys, not your coins.</strong>
+                </p>
+            </details>
+
+            <details style="margin-bottom: 2rem;">
+                <summary><strong>Doesn’t ₿itcoin just help rich tech bros?</strong></summary>
+                <p>
+                    ₿itcoin doesn’t care who you are.<br><br>
+                    Anyone on Earth can acquire it, store it, and send it. <strong>No insider access. No elite privileges.</strong><br><br>
+                    Unlike fiat, no one can print more to dilute your share.
+                </p>
+            </details>
+
+            <details style="margin-bottom: 2rem;">
+                <summary><strong>Who controls ₿itcoin’s rules?</strong></summary>
+                <p>
+                    No one. And everyone.<br><br>
+                    ₿itcoin is governed by open-source code and distributed consensus. Changes require overwhelming global agreement — which means <strong>no single party can change the rules to benefit themselves.</strong>
+                </p>
+            </details>
+
+            <details style="margin-bottom: 2rem;">
+                <summary><strong>Does ₿itcoin have any real value?</strong></summary>
+                <p>
+                    Value is what can’t be taken from you. ₿itcoin is <strong>permissionless ownership secured by energy and time</strong>.<br><br>
+                    It’s not backed by belief — it’s backed by reality.
+                </p>
+            </details>
+
+            <details style="margin-bottom: 2rem;">
+                <summary><strong>Is ₿itcoin centralized by miners or developers?</strong></summary>
+                <p>
+                    Miners can’t change the rules. Developers can’t force updates. Whales can’t inflate the supply.<br><br>
+                    ₿itcoin is governed by the rules that anyone can audit — but no one can secretly rewrite.
+                </p>
+            </details>
+
+            <details style="margin-bottom: 2rem;">
+                <summary><strong>What happens when all the ₿itcoin is mined?</strong></summary>
+                <p>
+                    ₿itcoin doesn’t stop — it shifts.<br><br>
+                    Miners are rewarded via transaction fees, not new coins. The protocol remains intact. <strong>The final coin is just the beginning of full maturity.</strong>
+                </p>
+            </details>
+
+            <details style="margin-bottom: 2rem;">
+                <summary><strong>Isn’t ₿itcoin unregulated and dangerous?</strong></summary>
+                <p>
+                    ₿itcoin is beyond regulation — and that’s its purpose.<br><br>
+                    It doesn’t exist to play nice with power. It exists to <strong>neutralize coercion with open rules and incorruptible access.</strong>
+                </p>
+            </details>
+
+            <details style="margin-bottom: 2rem;">
+                <summary><strong>Isn’t ₿itcoin bad for society since it doesn’t fund public goods?</strong></summary>
+                <p>
+                    Fiat funds empire and surveillance through coercion.<br><br>
+                    ₿itcoin enables <strong>voluntary coordination and honest funding</strong> — not political favoritism or debt servitude.<br><br>
+                    It doesn’t destroy public goods. It liberates them.
+                </p>
+            </details>
+
+            <details style="margin-bottom: 2rem;">
+                <summary><strong>Can someone just copy ₿itcoin and make a better one?</strong></summary>
+                <p>
+                    You can copy code. You can’t copy credibility.<br><br>
+                    ₿itcoin’s launch was <strong>uncapturable — no pre-mine, no venture capital, no marketing.</strong><br><br>
+                    Its network effects and trust are unrepeatable.
+                </p>
+            </details>
+
+            <details style="margin-bottom: 2rem;">
+                <summary><strong>What if something better comes along?</strong></summary>
+                <p>
+                    Better at what?<br><br>
+                    ₿itcoin isn’t optimized for speed, features, or profits.<br><br>
+                    It’s optimized for <strong>immutability, neutrality, and incorruptibility</strong> — and no one else has matched that.
+                </p>
+            </details>
+
+        </div>
+    </section>
+
+  
+    
+    <!-- Footer -->
+    <footer>
+      ⛓️ Forged in entropy. ⏱️ Sealed by energy. 🌐 ₿roadcast through sovereign time.
+    </footer>
+  </div>
+  
+  <!-- Back-to-Top Button -->
+  <button id="backToTop" title="Back to top">&#8679;</button>
+  
+  <!-- ===== JavaScript for Advanced Interactivity & Animations ===== -->
+  <script>
+    /* --- Advanced Particle System with Connections --- */
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    const particleCount = 150;
+    const maxVelocity = 0.6;
+    const interactionRadius = 100;
+    let mouse = { x: null, y: null };
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initParticles();
+    }
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+    window.addEventListener('mouseout', () => {
+      mouse.x = null;
+      mouse.y = null;
+    });
+    
+    function initParticles() {
+      particles = [];
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: Math.random() * 2 + 1,
+          vx: (Math.random() - 0.5) * maxVelocity,
+          vy: (Math.random() - 0.5) * maxVelocity,
+          hue: Math.random() * 360
+        });
+      }
+    }
+    
+    function drawParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${p.hue}, 100%, 80%, 0.8)`;
+        ctx.fill();
+      });
+      // Draw connecting lines
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          let dx = particles[i].x - particles[j].x;
+          let dy = particles[i].y - particles[j].y;
+          let dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < interactionRadius) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(255,255,255,${1 - dist/interactionRadius})`;
+            ctx.lineWidth = 0.5;
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+    
+    function updateParticles() {
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        // Bounce at edges
+        if (p.x < 0 || p.x > canvas.width) p.vx = -p.vx;
+        if (p.y < 0 || p.y > canvas.height) p.vy = -p.vy;
+        // Mouse interaction: attract particles
+        if (mouse.x && mouse.y) {
+          let dx = mouse.x - p.x;
+          let dy = mouse.y - p.y;
+          let dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < interactionRadius) {
+            p.vx += (dx / dist) * 0.03;
+            p.vy += (dy / dist) * 0.03;
+          }
+        }
+        // Gradually change hue for dynamic colors
+        p.hue += 0.2;
+      });
+    }
+    
+    function animateParticles() {
+      updateParticles();
+      drawParticles();
+      requestAnimationFrame(animateParticles);
+    }
+    resizeCanvas();
+    animateParticles();
+    
+    /* --- Intersection Observer for Section Reveal --- */
+    const sections = document.querySelectorAll('.section');
+    const observerOptions = { threshold: 0.2 };
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          sectionObserver.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+    sections.forEach(section => sectionObserver.observe(section));
+    
+    /* --- Scroll Progress Bar & Sticky Nav --- */
+    const progressBar = document.getElementById('progressBar');
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      const scrollPos = window.scrollY;
+      const docHeight = document.body.scrollHeight - window.innerHeight;
+      const scrollPercent = (scrollPos / docHeight) * 100;
+      progressBar.style.width = scrollPercent + "%";
+      if (scrollPos > 50) navbar.classList.add('sticky');
+      else navbar.classList.remove('sticky');
+      if (scrollPos > 300) backToTopBtn.classList.add('visible');
+      else backToTopBtn.classList.remove('visible');
+    });
+    
+    /* --- Back-to-Top Button Functionality --- */
+    const backToTopBtn = document.getElementById('backToTop');
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    
+    /* --- Mobile Hamburger Menu Toggle --- */
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('nav-links');
+    hamburger.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+      hamburger.classList.toggle('active');
+    });
+  </script>
+</body>
+</html>
